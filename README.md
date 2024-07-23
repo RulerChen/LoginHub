@@ -6,20 +6,14 @@ LoginHub is a microservice-based application that provides authentication and au
 
 ## Tech Stack
 
-<span>
-
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Express](https://img.shields.io/badge/Express%20js-000000?style=for-the-badge&logo=express&logoColor=white)
-![Redis](https://img.shields.io/badge/redis-CC0000.svg?&style=for-the-badge&logo=redis&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-623CE4?style=for-the-badge&logo=terraform&logoColor=white)
-![GCP](https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
-![Github Actions](https://img.shields.io/badge/Github%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
-
-</span>
+- `Frontend`: React
+- `Backend`: Node.js(Express)
+- `Database`: PostgreSQL
+- `Cache`: Redis
+- `Message Broker`: RabbitMQ
+- `Containerization`: Docker、Kubernetes
+- `CI/CD`: GitHub Actions
+- `Infrastructure`: Terraform、GCP
 
 ## Features
 
@@ -32,11 +26,9 @@ LoginHub is a microservice-based application that provides authentication and au
 
 ## Folder Structure
 
-- `backend`: Contains the backend code for the application.
 - `frontend`: Contains the frontend code for the application.
+- `backend`: Contains the backend code for the application.
 - `kubernetes`: Contains the Kubernetes configuration files for the application.
-- `kubernetes/gcp`: Contains the GCP configuration files for the application.
-- `kubernetes/local`: Contains the minikube configuration files for the application.
 - `postman`: Contains the Postman collection for the application.
 - `deployment`: Contains the terraform configuration files for the application.
 
@@ -46,6 +38,7 @@ LoginHub is a microservice-based application that provides authentication and au
 - [ ] OTP
 - [ ] SMS
 - [ ] Frontend
+- [ ] Observability
 - [ ] More boilerplate code
 
 ## Local Development
@@ -110,6 +103,24 @@ Install GCLOUD and Terraform
 ```bash
 # login to gcloud
 gcloud auth application-default login
+
+# create a bucket to store terraform state
+
+# init terraform
+terraform init --reconfigure -backend-config="<bucket_name>"
+
+# apply terraform
+# be careful with there are bug in terraform so you need to apply twice
+terraform plan
+terraform apply
+
+# push docker image to google artifact registry
+# you can see the command in the backend README.md
+
+# apply all yaml file under kubernetes/gcp and change secrets
+kubectl apply -f .
+
+# reapply terraform and adjust vpc peering under netowrk module
 ```
 
 k8s
