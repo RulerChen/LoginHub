@@ -1,0 +1,2 @@
+project_id    = "loginhub-dev"
+workspace_env = "dev"

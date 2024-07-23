@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: loginhub-gateway-ingress
+  namespace: production
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: loginhub-gateway
+      port:
+        number: 8000
+  tls:
+    - hosts:
+        - loginhub.com
+      secretName: loginhub-tls
+  rules:
+    - host: loginhub.com
+      http:
+        paths:
+          - path: /api/v1/gateway
+            pathType: Prefix
+            backend:
+              service:
+                name: loginhub-gateway
+                port:
+                  number: 8000

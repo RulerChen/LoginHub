@@ -1,0 +1,128 @@
+services:
+  redis:
+    container_name: redis
+    image: redis:7.2-alpine
+    restart: always
+    command: redis-server --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - ./volumns/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - loginhub
+
+  postgres_auth:
+    container_name: postgres_auth
+    image: postgres:16.1-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: loginhub_auth
+      POSTGRES_USER: loginhub
+      POSTGRES_PASSWORD: loginhub
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U loginhub -d loginhub_auth'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - ./volumns/postgres-auth:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - loginhub
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.13.4-management-alpine
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: loginhub
+      RABBITMQ_DEFAULT_PASS: loginhub
+    healthcheck:
+      test: rabbitmq-diagnostics -q status
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - ./volumns/rabbitmq:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - loginhub
+
+  gateway:
+    container_name: gateway
+    build:
+      context: ./backend/1-gateway
+      dockerfile: Dockerfile.dev
+    restart: always
+    env_file:
+      - path: ./backend/1-gateway/.env
+        required: true
+    environment:
+      - AUTH_BASE_URL=http://auth:8000
+      - REDIS_HOST=redis
+    ports:
+      - "8001:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+        restart: true
+    networks:
+      - loginhub
+
+  notification:
+    container_name: notification
+    build:
+      context: ./backend/2-notification
+      dockerfile: Dockerfile.dev
+    restart: always
+    env_file:
+      - path: ./backend/2-notification/.env
+        required: true
+    environment:
+      - RABBITMQ_ENDPOINT=amqp://loginhub:loginhub@rabbitmq:5672
+    ports:
+      - "8002:8000"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    networks:
+      - loginhub
+
+  auth:
+    container_name: auth
+    build:
+      context: ./backend/3-auth
+      dockerfile: Dockerfile.dev
+    restart: always
+    env_file:
+      - path: ./backend/3-auth/.env
+        required: true
+    environment:
+      - RABBITMQ_ENDPOINT=amqp://loginhub:loginhub@rabbitmq:5672
+      - DATABASE_HOST=postgres_auth
+    ports:
+      - "8003:8000"
+    depends_on:
+      postgres_auth:
+        condition: service_healthy
+        restart: true
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    networks:
+      - loginhub
+
+networks:
+  loginhub:

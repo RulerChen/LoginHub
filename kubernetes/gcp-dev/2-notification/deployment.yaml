@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loginhub-notification
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loginhub-notification
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: loginhub-notification
+    spec:
+      containers:
+        - name: loginhub-notification
+          image: asia-east1-docker.pkg.dev/loginhub-dev/main-repo/loginhub-2-notification:stable
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 150Mi
+          ports:
+            - name: notification
+              containerPort: 8000
+          livenessProbe:
+            httpGet:
+              path: /api/healthy
+              port: 8000
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 30
+            failureThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /api/healthy
+              port: 8000
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 30
+            failureThreshold: 1
+          env:
+            - name: PORT
+              value: "8000"
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: client-url
+            - name: RABBITMQ_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: rabbitmq-endpoint
+            - name: SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: sender-email
+            - name: SENDER_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: sender-email-password

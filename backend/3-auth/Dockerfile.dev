@@ -1,0 +1,14 @@
+FROM node:20-alpine3.18
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+COPY . .
+
+EXPOSE 8000
+
+CMD ["npm", "run", "dev"]
+
+# docker image build -t gateway:dev -f Dockerfile.dev .
+# docker run -it --rm -p 8000:8000 gateway:dev

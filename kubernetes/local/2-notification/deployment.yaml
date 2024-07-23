@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loginhub-notification
+  namespace: production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loginhub-notification
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  template:
+    metadata:
+      labels:
+        app: loginhub-notification
+    spec:
+      containers:
+        - name: loginhub-notification
+          image: rulerchen/loginhub-2-notification:stable
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 300m
+              memory: 300Mi
+          ports:
+            - name: notification
+              containerPort: 8000
+          env:
+            - name: PORT
+              value: "8000"
+            - name: CLIENT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: client-url
+            - name: RABBITMQ_ENDPOINT
+              value: amqp://loginhub:loginhub@loginhub-queue.production.svc.cluster.local:5672
+            - name: SENDER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: sender-email
+            - name: SENDER_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: loginhub-backend-secret
+                  key: sender-email-password
