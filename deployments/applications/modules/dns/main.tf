@@ -21,12 +21,7 @@ resource "google_clouddomains_registration" "my_registration" {
   }
   dns_settings {
     custom_dns {
-      name_servers = [
-        "ns-cloud-a1.googledomains.com.",
-        "ns-cloud-a2.googledomains.com.",
-        "ns-cloud-a3.googledomains.com.",
-        "ns-cloud-a4.googledomains.com."
-      ]
+      name_servers = google_dns_managed_zone.default.name_servers
     }
   }
   contact_settings {
