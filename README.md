@@ -24,6 +24,8 @@ LoginHub is a microservice-based application that provides authentication and au
 
 ## Architecture
 
+![Architecture](./docs/architecture.jpg)
+
 ## Folder Structure
 
 - `frontend`: Contains the frontend code for the application.
