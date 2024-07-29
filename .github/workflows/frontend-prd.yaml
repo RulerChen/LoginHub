@@ -27,12 +27,13 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+      - name: Auth
+        uses: "google-github-actions/auth@v2"
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID_PRD }}
-          service_account_key: ${{ secrets.GCP_SA_KEY_PRD }}
-          export_default_credentials: true
+          credentials_json: "${{ secrets.GCP_SA_KEY_PRD }}"
+
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v2"
 
       - name: Upload to GCS
         run: |
