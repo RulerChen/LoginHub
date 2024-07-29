@@ -20,8 +20,8 @@ import { link as linkStyles } from '@nextui-org/theme';
 import clsx from 'clsx';
 
 import { siteConfig } from '../config/site';
-import { ThemeSwitcher } from './switch-mode';
-import { GithubIcon, SearchIcon, LogoLight, LogoDark } from './icons';
+import { ThemeSwitcher } from '../ui/switch-mode';
+import { GithubIcon, SearchIcon, LogoLight, LogoDark } from '../ui/icons';
 
 export const Navbar = () => {
   const { theme } = useTheme();
