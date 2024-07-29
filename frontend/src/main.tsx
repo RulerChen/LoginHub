@@ -1,22 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'react-hot-toast';
+import Layout from './layout';
 import HomePage from './routes/homepage';
 import LoginPage from './routes/login';
 import ConfirmEmail from './routes/confirm-email';
 import ErrorPage from './error-page';
-import { Navbar } from './components/Navbar';
 import './index.css';
-
-const Layout = () => (
-  <>
-    <Navbar />
-    <Outlet />
-  </>
-);
 
 const router = createBrowserRouter([
   {
